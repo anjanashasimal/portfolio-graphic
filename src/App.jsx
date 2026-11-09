@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import cutout from "./hero-cutout.webp";
+import photoshopLogo from "./tools/photoshop.svg";
+import illustratorLogo from "./tools/illustrator.svg";
+import figmaLogo from "./tools/figma.svg";
+import fontforgeLogo from "./tools/fontforge.svg";
+import premiereLogo from "./tools/premiere-pro.svg";
+import afterEffectsLogo from "./tools/after-effects.svg";
+import davinciLogo from "./tools/davinci-resolve.svg";
+import blenderLogo from "./tools/blender.svg";
 /* ------------------------------------------------------------------
    Edit everything below to match your real work.
 
@@ -23,6 +31,19 @@ const PROFILE = {
   phoneIntl: "94772790502",
   email: "anjanashasimal@gmail.com",
 };
+
+/* Skills & Tools. Logos live in src/tools. `use` is the short line under each
+   tool's name; edit freely. */
+const TOOLS = [
+  { name: "Adobe Photoshop", logo: photoshopLogo, group: "Design", color: "#31a8ff", use: "Posters, social posts, photo retouching" },
+  { name: "Adobe Illustrator", logo: illustratorLogo, group: "Design", color: "#ff9a00", use: "Logos, brand identity, vector art" },
+  { name: "Figma", logo: figmaLogo, group: "Design", color: "#a259ff", use: "Layouts, UI and social templates" },
+  { name: "FontForge", logo: fontforgeLogo, group: "Design", color: "#e2e2de", use: "Custom type and lettering" },
+  { name: "Adobe Premiere Pro", logo: premiereLogo, group: "Video & Motion", color: "#ea77ff", use: "Video editing, reels, promos" },
+  { name: "Adobe After Effects", logo: afterEffectsLogo, group: "Video & Motion", color: "#9999ff", use: "Motion graphics, logo animation" },
+  { name: "DaVinci Resolve", logo: davinciLogo, group: "Video & Motion", color: "#ff5c5c", use: "Colour grading and editing" },
+  { name: "Blender", logo: blenderLogo, group: "3D", color: "#f5792a", use: "3D models, scenes and renders" },
+];
 
 const SERVICES = ["Video editing", "Animation", "Graphic design", "Logo design"];
 
@@ -90,6 +111,59 @@ const PROJECTS = CATEGORIES.slice(1).flatMap((category) => {
     };
   });
 });
+
+/* Client reviews. Replace these placeholders with real feedback from your clients.
+   rating: 1 to 5. photo: optional, e.g. import a file from src and put it here;
+   without a photo the card shows the client's initials. */
+const TESTIMONIALS = [
+  {
+    name: "Client name",
+    role: "Business name / role",
+    project: "Logo design",
+    rating: 5,
+    quote: "Paste what this client said about your work here. One to three sentences reads best.",
+    photo: null,
+  },
+  {
+    name: "Client name",
+    role: "Business name / role",
+    project: "Video editing",
+    rating: 5,
+    quote: "Paste what this client said about your work here. One to three sentences reads best.",
+    photo: null,
+  },
+  {
+    name: "Client name",
+    role: "Business name / role",
+    project: "Film poster",
+    rating: 5,
+    quote: "Paste what this client said about your work here. One to three sentences reads best.",
+    photo: null,
+  },
+];
+
+/* Pricing. Update your prices here.
+   price: a number like 15000 shows "Starting from LKR 15,000 / per logo".
+          null shows "Price on request".
+   includes: optional list of what the price covers, e.g. ["3 logo concepts", "2 revisions"].
+   CURRENCY applies to every card. */
+const CURRENCY = "LKR";
+const PRICING = [
+  { service: "Logo design", about: "A logo that fits your brand, ready for print and social media.", price: null, unit: "per logo", includes: [] },
+  { service: "Social media posts", about: "Eye-catching post designs for Facebook, Instagram and more.", price: null, unit: "per post", includes: [] },
+  { service: "Video editing", about: "Reels, promos and highlight videos, cut and finished.", price: null, unit: "per video", includes: [] },
+  { service: "Animation", about: "Logo reveals, motion graphics and animated ads.", price: null, unit: "per animation", includes: [] },
+  { service: "Film posters", about: "Cinematic poster artwork for films, events and campaigns.", price: null, unit: "per poster", includes: [] },
+  { service: "3D design", about: "3D models, scenes and renders made in Blender.", price: null, unit: "per project", includes: [] },
+];
+
+/* Achievements & Awards. Replace these placeholders with your real ones.
+   type: "Award", "Certificate" or "Milestone" (picks the icon). Newest first reads best. */
+const ACHIEVEMENTS = [
+  { year: "2025", type: "Award", title: "Award or achievement title", by: "Organisation or event", note: "One line about what it was for." },
+  { year: "2024", type: "Certificate", title: "Certificate or course name", by: "Issued by", note: "One line about what you learned or proved." },
+  { year: "2023", type: "Milestone", title: "A milestone you are proud of", by: "Client, project or platform", note: "One line about why it mattered." },
+];
 
 const MORE_WORK = [
   { name: "Wedding highlight film", kind: "Video edit", year: 2025, link: "#" },
@@ -192,31 +266,76 @@ function PillButton({ href, children, variant = "light" }) {
   );
 }
 
+const NAV_LINKS = [
+  ["#about", "About"],
+  ["#skills", "Skills"],
+  ["#work", "Work"],
+  ["#reviews", "Reviews"],
+  ["#awards", "Awards"],
+  ["#pricing", "Pricing"],
+  ["#contact", "Contact"],
+];
+
 function Nav() {
   const [hidden, setHidden] = useState(false);
+  const [open, setOpen] = useState(false);
+  const openRef = useRef(false);
+  openRef.current = open;
+
   useEffect(() => {
     let last = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
       if (Math.abs(y - last) < 6) return;
-      setHidden(y > last && y > 160);
+      setHidden(!openRef.current && y > last && y > 160);
       last = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Phone menu: lock page scroll while open, close on Escape.
+  useEffect(() => {
+    document.documentElement.classList.toggle("menu-open", open);
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
-    <header className={hidden ? "nav nav-hidden" : "nav"}>
-      <a href="#top" className="nav-brand">
-        <span>{PROFILE.short}<em>.</em></span>
-      </a>
-      <nav className="nav-links" aria-label="Main">
-        <a href="#about">About</a>
-        <a href="#work">Work</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <PillButton href="#contact">Get in touch</PillButton>
-    </header>
+    <>
+      <header className={hidden ? "nav nav-hidden" : "nav"}>
+        <a href="#top" className="nav-brand" onClick={() => setOpen(false)}>
+          <span>{PROFILE.short}<em>.</em></span>
+        </a>
+        <nav className="nav-links" aria-label="Main">
+          {NAV_LINKS.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+        </nav>
+        <div className="nav-actions">
+          <PillButton href="#contact">Get in touch</PillButton>
+          <button
+            className={open ? "menu-btn is-open" : "menu-btn"}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen((o) => !o)}
+          >
+            <span /><span />
+          </button>
+        </div>
+      </header>
+      <div id="mobile-menu" className={open ? "menu is-open" : "menu"} aria-hidden={!open}>
+        <nav aria-label="Mobile">
+          {NAV_LINKS.map(([href, label], i) => (
+            <a key={href} href={href} style={{ "--i": i }} tabIndex={open ? 0 : -1} onClick={() => setOpen(false)}>
+              <span>0{i + 1}</span>{label}
+            </a>
+          ))}
+        </nav>
+        <a className="menu-mail" href={`mailto:${PROFILE.email}`} tabIndex={open ? 0 : -1}>{PROFILE.email}</a>
+      </div>
+    </>
   );
 }
 
@@ -294,6 +413,41 @@ function About() {
   );
 }
 
+function Skills() {
+  const groups = [...new Set(TOOLS.map((t) => t.group))];
+  return (
+    <section className="skills" id="skills">
+      <div className="skills-head" data-reveal>
+        <div>
+          <p className="kicker">Skills &amp; Tools</p>
+          <h2>The tools behind the work</h2>
+        </div>
+        <ul className="skills-groups" aria-label="Skill areas">
+          {groups.map((g, i) => (
+            <li key={g} style={{ "--i": i }}>{g}<span>{TOOLS.filter((t) => t.group === g).length}</span></li>
+          ))}
+        </ul>
+      </div>
+      <ul className="tools">
+        {TOOLS.map((t, i) => (
+          // --d staggers the entrance as a diagonal wave across the 4-column grid
+          <li key={t.name} className="tool" data-reveal style={{ "--i": i, "--d": (i % 4) + Math.floor(i / 4) }}>
+            <img className="tool-mark" src={t.logo} alt="" aria-hidden="true" />
+            <div className="tool-top">
+              <span className="tool-badge"><img src={t.logo} alt="" /></span>
+              <span className="tool-tag">{t.group}</span>
+            </div>
+            <p className="tool-use">{t.use}</p>
+            <div className="tool-foot">
+              <h3>{t.name}</h3>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function Marquee() {
   const words = [...SERVICES, ...SERVICES];
   return (
@@ -302,7 +456,7 @@ function Marquee() {
         {[0, 1].map((copy) => (
           <span className="marquee-group" key={copy}>
             {words.map((w, i) => (
-              <span key={i} className={i % 2 ? "mq-word mq-outline" : "mq-word"}>{w}<em>✦</em></span>
+              <span key={i} className={i % 2 ? "mq-word mq-outline" : "mq-word"}>{w}<i className="mq-dot" /></span>
             ))}
           </span>
         ))}
@@ -352,11 +506,22 @@ function ProjectCard({ p, i }) {
   );
 }
 
+function shuffle(list) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function Work() {
   const [filter, setFilter] = useState("All");
   const [page, setPage] = useState(1);
   const headRef = useRef(null);
-  const matching = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
+  // "All" mixes every category in a random order, shuffled once per visit so pages stay stable.
+  const [mixed] = useState(() => shuffle(PROJECTS));
+  const matching = filter === "All" ? mixed : PROJECTS.filter((p) => p.category === filter);
   // 8 fills the 4-column mixed grid (and the poster grid) exactly; the flat grid has 3 columns.
   const perPage = filter === "All" || filter === "Film Posters" ? 8 : 6;
   const pages = Math.max(1, Math.ceil(matching.length / perPage));
@@ -391,10 +556,10 @@ function Work() {
         </div>
       </div>
 
-      <div key={`${filter}-${current}`} className={filter === "All" ? "grid" : filter === "Film Posters" ? "grid grid-flat grid-posters" : "grid grid-flat"}>
+      <div key={`${filter}-${current}`} className={filter === "All" || filter === "Film Posters" ? "grid grid-flat grid-posters" : "grid grid-flat"}>
         {shown.map((p, i) => (
-          // In "All", everything except posters is square so every row fills 4 across with no gaps.
-          <ProjectCard key={p.title} p={filter === "All" && p.size !== "poster" ? { ...p, size: "sq" } : p} i={i} />
+          // "All" uses equal portrait cards, so any random order fills rows of 4 with no gaps.
+          <ProjectCard key={p.title} p={p} i={i} />
         ))}
       </div>
 
@@ -437,6 +602,177 @@ function Work() {
   );
 }
 
+function Stars({ n }) {
+  return (
+    <span className="stars" role="img" aria-label={`${n} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((k) => (
+        <svg key={k} width="16" height="16" viewBox="0 0 24 24" className={k <= n ? "on" : ""} aria-hidden="true">
+          <path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="currentColor" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+function initials(name) {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+}
+
+function Testimonials() {
+  if (TESTIMONIALS.length === 0) return null;
+  const avg = TESTIMONIALS.reduce((sum, t) => sum + t.rating, 0) / TESTIMONIALS.length;
+  return (
+    <section className="reviews" id="reviews">
+      <div className="reviews-head" data-reveal>
+        <div>
+          <p className="kicker">Client feedback</p>
+          <h2>What clients say</h2>
+        </div>
+        <div className="reviews-score">
+          <strong>{avg.toFixed(1)}</strong>
+          <div>
+            <Stars n={Math.round(avg)} />
+            <span>from {TESTIMONIALS.length} {TESTIMONIALS.length === 1 ? "review" : "reviews"}</span>
+          </div>
+        </div>
+      </div>
+
+      <ul className="reviews-grid">
+        {TESTIMONIALS.map((t, i) => (
+          <li key={i} className="review" data-reveal style={{ "--i": i }}>
+            <span className="review-mark" aria-hidden="true">“</span>
+            <Stars n={t.rating} />
+            <blockquote>{t.quote}</blockquote>
+            <div className="review-who">
+              {t.photo ? (
+                <img className="review-avatar" src={t.photo} alt="" />
+              ) : (
+                <span className="review-avatar" aria-hidden="true">{initials(t.name)}</span>
+              )}
+              <div className="review-name">
+                <strong>{t.name}</strong>
+                <span>{t.role}</span>
+              </div>
+              {t.project && <span className="review-tag">{t.project}</span>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function AwardIcon({ type }) {
+  const common = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
+  if (type === "Certificate") {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="9" r="5.5" />
+        <path d="M8.6 13.4 7.5 21l4.5-2.4 4.5 2.4-1.1-7.6" />
+      </svg>
+    );
+  }
+  if (type === "Milestone") {
+    return (
+      <svg {...common}>
+        <path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.6l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <path d="M8 4h8v5a4 4 0 0 1-8 0V4z" />
+      <path d="M16 6h3v1.5A3.5 3.5 0 0 1 15.6 11M8 6H5v1.5A3.5 3.5 0 0 0 8.4 11M12 13v4M8.5 20h7M10 17h4" />
+    </svg>
+  );
+}
+
+function Achievements() {
+  if (ACHIEVEMENTS.length === 0) return null;
+  const types = [...new Set(ACHIEVEMENTS.map((a) => a.type))];
+  return (
+    <section className="awards" id="awards">
+      <div className="awards-head" data-reveal>
+        <div>
+          <p className="kicker">Achievements &amp; Awards</p>
+          <h2>Recognition along the way</h2>
+        </div>
+        <ul className="skills-groups" aria-label="Achievement types">
+          {types.map((t, i) => (
+            <li key={t} style={{ "--i": i }}>{t}<span>{ACHIEVEMENTS.filter((a) => a.type === t).length}</span></li>
+          ))}
+        </ul>
+      </div>
+      <ol className="awards-list">
+        {ACHIEVEMENTS.map((a, i) => (
+          <li key={i} className="award" data-reveal style={{ "--i": i }}>
+            <span className="aw-year">{a.year}</span>
+            <span className="aw-icon"><AwardIcon type={a.type} /></span>
+            <div className="aw-text">
+              <h3>{a.title}</h3>
+              <p><span>{a.by}</span>{a.note && <><span className="aw-sep"> · </span><span>{a.note}</span></>}</p>
+            </div>
+            <span className="aw-type">{a.type}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function Pricing() {
+  if (PRICING.length === 0) return null;
+  const quote = (service) =>
+    `https://wa.me/${PROFILE.phoneIntl}?text=${encodeURIComponent(`Hi ${PROFILE.short}, I'd like a quote for ${service.toLowerCase()}.`)}`;
+  return (
+    <section className="pricing" id="pricing">
+      <div className="pricing-head" data-reveal>
+        <div>
+          <p className="kicker">Pricing</p>
+          <h2>Simple, honest pricing</h2>
+        </div>
+        <p className="pricing-note">Every project is different. Send me the details and I’ll give you an exact quote.</p>
+      </div>
+
+      <ul className="plans">
+        {PRICING.map((p, i) => (
+          <li key={p.service} className="plan" data-reveal style={{ "--i": i }}>
+            <div className="plan-top">
+              <span className="plan-no">0{i + 1}</span>
+              <h3>{p.service}</h3>
+            </div>
+            <p className="plan-about">{p.about}</p>
+            <div className="plan-price">
+              {p.price != null ? (
+                <>
+                  <span className="plan-from">Starting from</span>
+                  <strong>{CURRENCY} {Number(p.price).toLocaleString("en-US")}</strong>
+                  {p.unit && <span className="plan-unit">{p.unit}</span>}
+                </>
+              ) : (
+                <>
+                  <span className="plan-from">Pricing</span>
+                  <strong className="plan-ask">Price on request</strong>
+                </>
+              )}
+            </div>
+            {p.includes?.length > 0 && (
+              <ul className="plan-includes">
+                {p.includes.map((x) => (
+                  <li key={x}><span aria-hidden="true">✓</span>{x}</li>
+                ))}
+              </ul>
+            )}
+            <a className="plan-cta" href={quote(p.service)} target="_blank" rel="noreferrer">
+              Get a quote <ArrowIcon size={14} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function Contact() {
   return (
     <section className="contact" id="contact">
@@ -451,17 +787,81 @@ function Contact() {
   );
 }
 
+/* ---------- Opening intro ----------
+   Plays once per browser session (main.jsx adds html.intro-on when it should).
+   Phases: "in" (name + counter) -> "out" (curtain lifts) -> "done" (removed). */
+function Intro() {
+  const [phase, setPhase] = useState(() =>
+    document.documentElement.classList.contains("intro-on") ? "in" : "done"
+  );
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (phase !== "in") return;
+    const DURATION = 1700;
+    let raf;
+    const start = performance.now();
+    // The counter is cosmetic; a plain timer ends the intro so it can never get
+    // stuck if animation frames are paused (background tab, slow device).
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / DURATION);
+      setCount(Math.round(100 * (1 - Math.pow(1 - t, 2.2))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    const wait = setTimeout(() => { setCount(100); setPhase("out"); }, DURATION + 260);
+    return () => { cancelAnimationFrame(raf); clearTimeout(wait); };
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "out") return;
+    try { sessionStorage.setItem("introSeen", "1"); } catch { /* storage blocked: intro just plays again */ }
+    // Let the curtain start lifting, then release the paused hero entrance.
+    const release = setTimeout(() => document.documentElement.classList.remove("intro-on"), 320);
+    const finish = setTimeout(() => setPhase("done"), 1250);
+    return () => { clearTimeout(release); clearTimeout(finish); };
+  }, [phase]);
+
+  if (phase === "done") return null;
+  return (
+    <div className={`intro intro-${phase}`} aria-hidden="true">
+      <div className="intro-orange" />
+      <div className="intro-black">
+        <div className="intro-center">
+          <p className="intro-name">
+            {[...PROFILE.short].map((c, i) => (
+              <span className="intro-mask" key={i}><span style={{ "--i": i }}>{c}</span></span>
+            ))}
+            <span className="intro-dot" />
+          </p>
+          <p className="intro-tag">Edit · Animate · Design</p>
+        </div>
+        <div className="intro-foot">
+          <span className="intro-label">Loading portfolio</span>
+          <span className="intro-count">{String(count).padStart(3, "0")}</span>
+        </div>
+        <div className="intro-bar"><span style={{ transform: `scaleX(${count / 100})` }} /></div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   useEffect(() => { observeReveals(); }, []);
   return (
     <div className="site">
+      <Intro />
       <Nav />
       <main>
         <Hero />
         <Strip />
         <About />
+        <Skills />
         <Marquee />
         <Work />
+        <Testimonials />
+        <Achievements />
+        <Pricing />
         <Contact />
       </main>
       <footer className="footer">
