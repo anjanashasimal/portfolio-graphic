@@ -165,6 +165,54 @@ const ACHIEVEMENTS = [
   { year: "2023", type: "Milestone", title: "A milestone you are proud of", by: "Client, project or platform", note: "One line about why it mattered." },
 ];
 
+/* ---------- Inspiration & Moodboard ----------
+   Everything here is yours to edit.
+   INSPIRATION: a short line about what drives your work, plus keyword tags.
+   PALETTES: name + colours (hex). The first palette's colours were sampled from your Rani posters.
+   TYPEFACES: font specimens. `family` must be a font the page loads (see the @import at the
+     top of App.css) or a system font.
+   Visual references: drop images into src/moodboard and they appear in the collage.
+     While that folder is empty, the collage shows your own posters and logos. */
+const INSPIRATION = {
+  line: "Cinema, light and shadow, and the shapes of Sinhala and Tamil lettering.",
+  keywords: ["Cinema", "Light & shadow", "Bold typography", "Sinhala & Tamil lettering", "Minimal layouts", "Motion"],
+};
+
+const PALETTES = [
+  {
+    name: "Rani",
+    note: "Sampled from the film posters",
+    colors: [
+      { name: "Ink", hex: "#1b1a18" },
+      { name: "Umber", hex: "#574944" },
+      { name: "Ash", hex: "#6d6b65" },
+      { name: "Dust", hex: "#a39794" },
+      { name: "Bone", hex: "#d7d0ce" },
+      { name: "Bindi red", hex: "#c10000" },
+    ],
+  },
+  {
+    name: "Ember",
+    note: "The colours of this portfolio",
+    colors: [
+      { name: "Black", hex: "#000000" },
+      { name: "Charcoal", hex: "#141414" },
+      { name: "Ember", hex: "#6e1704" },
+      { name: "Orange", hex: "#ff4f12" },
+      { name: "Glow", hex: "#ff7a2e" },
+      { name: "Off-white", hex: "#f4f4f2" },
+    ],
+  },
+];
+
+const TYPEFACES = [
+  { name: "Plus Jakarta Sans", role: "Headings and body on this site", family: "'Plus Jakarta Sans', sans-serif", sample: "Aa", weight: 800, line: "Edit. Animate. Design." },
+  { name: "Bebas Neue", role: "Condensed caps, like film credit lines", family: "'Bebas Neue', sans-serif", sample: "AA", weight: 400, line: "A FILM BY ASOKA HANDAGAMA" },
+  { name: "Playfair Display", role: "A classic serif for taglines", family: "'Playfair Display', serif", sample: "Aa", weight: 500, italic: true, line: "Queen without her prince" },
+];
+
+const MOODBOARD = import.meta.glob("./moodboard/*.{jpg,jpeg,png,webp,gif}", { eager: true, import: "default" });
+
 const MORE_WORK = [
   { name: "Wedding highlight film", kind: "Video edit", year: 2025, link: "#" },
   { name: "Tuition class promo", kind: "Animated ad", year: 2025, link: "#" },
@@ -270,6 +318,7 @@ const NAV_LINKS = [
   ["#about", "About"],
   ["#skills", "Skills"],
   ["#work", "Work"],
+  ["#moodboard", "Moodboard"],
   ["#reviews", "Reviews"],
   ["#awards", "Awards"],
   ["#pricing", "Pricing"],
@@ -378,15 +427,54 @@ function Hero() {
   );
 }
 
+// Icons for the strip under the hero. Pen-tool and image shapes adapted from Lucide (ISC).
+function KindIcon({ kind }) {
+  const props = { className: "k-icon", width: 24, height: 24, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
+  if (kind === "Logos") {
+    return (
+      <svg {...props}>
+        <path d="M15.7 21.3a1 1 0 0 1-1.4 0l-1.6-1.6a1 1 0 0 1 0-1.4l5.6-5.6a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4z" />
+        <path d="m18 13-1.4-6.9a1 1 0 0 0-.7-.8L3.2 2a1 1 0 0 0-1.2 1.2l3.3 12.7a1 1 0 0 0 .8.7L13 18" />
+        <path d="m2.3 2.3 7.3 7.3" />
+        <circle cx="11" cy="11" r="2" />
+      </svg>
+    );
+  }
+  if (kind === "Posts") {
+    return (
+      <svg {...props}>
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <circle cx="9" cy="9" r="2" />
+        <path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" />
+      </svg>
+    );
+  }
+  if (kind === "Videos") {
+    return (
+      <svg {...props}>
+        <rect x="2" y="4" width="20" height="16" rx="3" />
+        <path d="M10 9.2v5.6l4.6-2.8z" fill="currentColor" />
+      </svg>
+    );
+  }
+  // Animation: a ball with a motion trail
+  return (
+    <svg {...props}>
+      <circle cx="17" cy="7" r="3.2" fill="currentColor" />
+      <circle cx="10" cy="12.5" r="2.2" fill="currentColor" stroke="none" opacity="0.55" />
+      <circle cx="4.8" cy="17.5" r="1.4" fill="currentColor" stroke="none" opacity="0.3" />
+    </svg>
+  );
+}
+
 function Strip() {
   return (
     <section className="strip" aria-label="What I make" data-reveal>
       <p className="strip-years"><CountUp to={PROFILE.years} suffix="+" /> years of client work</p>
       <ul className="strip-kinds">
-        <li><span className="k-ring" />Logos</li>
-        <li><span className="k-bar" />Posts</li>
-        <li><span className="k-half" />Videos</li>
-        <li><span className="k-duo" />Animation</li>
+        {["Logos", "Posts", "Videos", "Animation"].map((k) => (
+          <li key={k}><KindIcon kind={k} />{k}</li>
+        ))}
       </ul>
     </section>
   );
@@ -515,27 +603,66 @@ function shuffle(list) {
   return a;
 }
 
+/* ---------- Pagination (shared) ----------
+   Items per page for each paged list. A pager only shows when a list is longer than one page. */
+const PAGE_SIZES = { reviews: 3, awards: 5, moreWork: 5 };
+
+// Slices `items` into pages. Scrolls back to `headRef` on page change and hands the
+// fresh elements to the reveal observer.
+function usePaged(items, perPage, headRef) {
+  const [page, setPage] = useState(1);
+  const pages = Math.max(1, Math.ceil(items.length / perPage));
+  const current = Math.min(page, pages);
+  const shown = items.slice((current - 1) * perPage, current * perPage);
+  useEffect(() => { observeReveals(); }, [current, perPage]);
+  const goTo = (n) => {
+    setPage(n);
+    headRef?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  return { shown, current, pages, goTo, setPage };
+}
+
+function Pager({ current, pages, goTo, label }) {
+  if (pages <= 1) return null;
+  return (
+    <nav className="pager" aria-label={label}>
+      <button className="chip pager-step" onClick={() => goTo(current - 1)} disabled={current === 1} aria-label="Previous page">
+        <span className="pager-flip"><ArrowIcon size={14} /></span>
+      </button>
+      {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
+        <button
+          key={n}
+          className={n === current ? "chip is-on" : "chip"}
+          aria-current={n === current ? "page" : undefined}
+          aria-label={`Page ${n}`}
+          onClick={() => goTo(n)}
+        >
+          {n}
+        </button>
+      ))}
+      <button className="chip pager-step" onClick={() => goTo(current + 1)} disabled={current === pages} aria-label="Next page">
+        <ArrowIcon size={14} />
+      </button>
+    </nav>
+  );
+}
+
 function Work() {
   const [filter, setFilter] = useState("All");
-  const [page, setPage] = useState(1);
   const headRef = useRef(null);
+  const moreRef = useRef(null);
   // "All" mixes every category in a random order, shuffled once per visit so pages stay stable.
   const [mixed] = useState(() => shuffle(PROJECTS));
   const matching = filter === "All" ? mixed : PROJECTS.filter((p) => p.category === filter);
   // 8 fills the 4-column mixed grid (and the poster grid) exactly; the flat grid has 3 columns.
   const perPage = filter === "All" || filter === "Film Posters" ? 8 : 6;
-  const pages = Math.max(1, Math.ceil(matching.length / perPage));
-  const current = Math.min(page, pages);
-  const shown = matching.slice((current - 1) * perPage, current * perPage);
+  const { shown, current, pages, goTo, setPage } = usePaged(matching, perPage, headRef);
+  const more = usePaged(MORE_WORK, PAGE_SIZES.moreWork, moreRef);
 
-  // New cards (filter or page change) are fresh elements, so hand them to the observer.
-  useEffect(() => { observeReveals(); }, [filter, current]);
+  // A filter change makes fresh cards even when the page number stays the same.
+  useEffect(() => { observeReveals(); }, [filter]);
 
   const pickFilter = (c) => { setFilter(c); setPage(1); };
-  const goTo = (n) => {
-    setPage(n);
-    headRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <section className="work" id="work">
@@ -563,30 +690,11 @@ function Work() {
         ))}
       </div>
 
-      {pages > 1 && (
-        <nav className="pager" aria-label="Project pages">
-          <button className="chip pager-step" onClick={() => goTo(current - 1)} disabled={current === 1} aria-label="Previous page">
-            <span className="pager-flip"><ArrowIcon size={14} /></span>
-          </button>
-          {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              className={n === current ? "chip is-on" : "chip"}
-              aria-current={n === current ? "page" : undefined}
-              onClick={() => goTo(n)}
-            >
-              {n}
-            </button>
-          ))}
-          <button className="chip pager-step" onClick={() => goTo(current + 1)} disabled={current === pages} aria-label="Next page">
-            <ArrowIcon size={14} />
-          </button>
-        </nav>
-      )}
+      <Pager current={current} pages={pages} goTo={goTo} label="Project pages" />
 
-      <h3 className="more-title" data-reveal>More work</h3>
-      <ul className="more">
-        {MORE_WORK.map((w, i) => (
+      <h3 className="more-title" ref={moreRef} data-reveal>More work</h3>
+      <ul className="more" key={more.current}>
+        {more.shown.map((w, i) => (
           <li key={w.name} data-reveal style={{ "--i": i }}>
             <a href={w.link}>
               <span className="more-icon"><LinkIcon /></span>
@@ -598,6 +706,7 @@ function Work() {
           </li>
         ))}
       </ul>
+      <Pager current={more.current} pages={more.pages} goTo={more.goTo} label="More work pages" />
     </section>
   );
 }
@@ -618,12 +727,100 @@ function initials(name) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
 }
 
+function Moodboard() {
+  const [copied, setCopied] = useState(null);
+  const own = Object.entries(MOODBOARD).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }));
+  const refs = (own.length ? own : [...Object.entries(FOLDERS["Film Posters"]), ...Object.entries(FOLDERS.Logos)])
+    .slice(0, 6)
+    .map(([path, url]) => ({ url, name: titleFromFile(path.split("/").pop()) }));
+
+  // Black or white text, whichever reads better on the swatch colour.
+  const inkOn = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    const lum = 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    return lum > 150 ? "#0a0a0a" : "#ffffff";
+  };
+
+  const copy = async (hex) => {
+    try { await navigator.clipboard.writeText(hex); } catch { /* clipboard blocked: still show the code */ }
+    setCopied(hex);
+    setTimeout(() => setCopied((c) => (c === hex ? null : c)), 1400);
+  };
+
+  return (
+    <section className="mood" id="moodboard">
+      <div className="mood-head" data-reveal>
+        <div>
+          <p className="kicker">Inspiration &amp; Moodboard</p>
+          <h2>What shapes my work</h2>
+        </div>
+        <p className="mood-note">The ideas, colours, type and images I keep coming back to.</p>
+      </div>
+
+      <div className="mood-grid">
+        <article className="mood-card mood-inspo" data-reveal>
+          <p className="mood-label"><span>01</span>Creative inspiration</p>
+          <p className="mood-line">{INSPIRATION.line}</p>
+          <ul className="mood-tags">
+            {INSPIRATION.keywords.map((k, i) => <li key={k} style={{ "--i": i }}>{k}</li>)}
+          </ul>
+        </article>
+
+        <article className="mood-card mood-colors" data-reveal style={{ "--i": 1 }}>
+          <p className="mood-label"><span>02</span>Color palettes<em>Tap a colour to copy it</em></p>
+          {PALETTES.map((pal) => (
+            <div className="palette" key={pal.name}>
+              <div className="palette-name"><strong>{pal.name}</strong><span>{pal.note}</span></div>
+              <ul className="swatches">
+                {pal.colors.map((c, i) => (
+                  <li key={c.hex} style={{ "--c": c.hex, "--ink": inkOn(c.hex), "--i": i }}>
+                    <button onClick={() => copy(c.hex)} aria-label={`Copy ${c.name} ${c.hex}`}>
+                      <span className="sw-name">{c.name}</span>
+                      <span className="sw-hex">{copied === c.hex ? "Copied" : c.hex.toUpperCase()}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </article>
+
+        <article className="mood-card mood-type" data-reveal style={{ "--i": 2 }}>
+          <p className="mood-label"><span>03</span>Typography inspiration</p>
+          <ul className="specimens">
+            {TYPEFACES.map((t) => (
+              <li key={t.name} style={{ fontFamily: t.family }}>
+                <span className="spec-big" style={{ fontWeight: t.weight, fontStyle: t.italic ? "italic" : "normal" }}>{t.sample}</span>
+                <span className="spec-line" style={{ fontWeight: t.weight, fontStyle: t.italic ? "italic" : "normal" }}>{t.line}</span>
+                <span className="spec-meta"><strong>{t.name}</strong>{t.role}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="mood-card mood-refs" data-reveal style={{ "--i": 3 }}>
+          <p className="mood-label"><span>04</span>Visual references</p>
+          <ul className="collage">
+            {refs.map((r, i) => (
+              <li key={r.url} style={{ "--i": i }}>
+                <img src={r.url} alt={r.name} loading="lazy" />
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function Testimonials() {
+  const headRef = useRef(null);
+  const rv = usePaged(TESTIMONIALS, PAGE_SIZES.reviews, headRef);
   if (TESTIMONIALS.length === 0) return null;
   const avg = TESTIMONIALS.reduce((sum, t) => sum + t.rating, 0) / TESTIMONIALS.length;
   return (
     <section className="reviews" id="reviews">
-      <div className="reviews-head" data-reveal>
+      <div className="reviews-head" ref={headRef} data-reveal>
         <div>
           <p className="kicker">Client feedback</p>
           <h2>What clients say</h2>
@@ -637,8 +834,8 @@ function Testimonials() {
         </div>
       </div>
 
-      <ul className="reviews-grid">
-        {TESTIMONIALS.map((t, i) => (
+      <ul className="reviews-grid" key={rv.current}>
+        {rv.shown.map((t, i) => (
           <li key={i} className="review" data-reveal style={{ "--i": i }}>
             <span className="review-mark" aria-hidden="true">“</span>
             <Stars n={t.rating} />
@@ -658,6 +855,7 @@ function Testimonials() {
           </li>
         ))}
       </ul>
+      <Pager current={rv.current} pages={rv.pages} goTo={rv.goTo} label="Review pages" />
     </section>
   );
 }
@@ -688,11 +886,13 @@ function AwardIcon({ type }) {
 }
 
 function Achievements() {
+  const headRef = useRef(null);
+  const aw = usePaged(ACHIEVEMENTS, PAGE_SIZES.awards, headRef);
   if (ACHIEVEMENTS.length === 0) return null;
   const types = [...new Set(ACHIEVEMENTS.map((a) => a.type))];
   return (
     <section className="awards" id="awards">
-      <div className="awards-head" data-reveal>
+      <div className="awards-head" ref={headRef} data-reveal>
         <div>
           <p className="kicker">Achievements &amp; Awards</p>
           <h2>Recognition along the way</h2>
@@ -703,8 +903,8 @@ function Achievements() {
           ))}
         </ul>
       </div>
-      <ol className="awards-list">
-        {ACHIEVEMENTS.map((a, i) => (
+      <ol className="awards-list" key={aw.current} start={(aw.current - 1) * PAGE_SIZES.awards + 1}>
+        {aw.shown.map((a, i) => (
           <li key={i} className="award" data-reveal style={{ "--i": i }}>
             <span className="aw-year">{a.year}</span>
             <span className="aw-icon"><AwardIcon type={a.type} /></span>
@@ -716,6 +916,7 @@ function Achievements() {
           </li>
         ))}
       </ol>
+      <Pager current={aw.current} pages={aw.pages} goTo={aw.goTo} label="Award pages" />
     </section>
   );
 }
@@ -859,6 +1060,7 @@ export default function App() {
         <Skills />
         <Marquee />
         <Work />
+        <Moodboard />
         <Testimonials />
         <Achievements />
         <Pricing />
